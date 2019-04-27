@@ -3,6 +3,7 @@ App configuration file
 """
 
 DEBUG = True
+JSON_SORT_KEYS = False
 
 # Cache config
 CACHE_TYPE = 'simple'
