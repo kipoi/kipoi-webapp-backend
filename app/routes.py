@@ -7,12 +7,7 @@ from app.metadata import models
 from app.generic.sequence_model import KipoiSequenceModel
 
 bp = Blueprint('routes', __name__)
-
-
-@bp.route('/')
-def hello():
-    return "Hello World"
-
+cached_models = {}
 
 @bp.route('/metadata/model_list')
 @bp.route('/metadata/model_list/<environment>')
@@ -33,8 +28,8 @@ def get_predictions():
     if 'models' not in request.json:
         return jsonify({'type': 'error', 'message': 'No models selected'})
 
-    models = request.json['models']
-    if models is None or len(models) == 0:
+    selected_models = request.json['models']
+    if selected_models is None or len(selected_models) == 0:
         return jsonify({'type': 'error', 'message': 'No models selected'})
 
     sequences = request.json['sequences']
@@ -43,8 +38,12 @@ def get_predictions():
 
     response = []
 
-    for model_name in models:
-        model = KipoiSequenceModel(model_name)
+    for model_name in selected_models:
+        if model_name in cached_models:
+            model = cached_models[model_name]
+        else:
+            model = KipoiSequenceModel(model_name)
+            cached_models[model_name] = model
 
         for sequence in sequences:
             predictions = model.predict(sequence['seq'])
