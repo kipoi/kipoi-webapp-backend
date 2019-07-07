@@ -9,6 +9,7 @@ from app.generic.sequence_model import KipoiSequenceModel
 bp = Blueprint('routes', __name__)
 cached_models = {}
 
+
 @bp.route('/metadata/model_list')
 @bp.route('/metadata/model_list/<environment>')
 def get_model_list(environment=None):
@@ -18,6 +19,22 @@ def get_model_list(environment=None):
         sequence_models = models.filter_sequence_models_by_environment(sequence_models, environment)
 
     return jsonify(sequence_models)
+
+
+@bp.route('/metadata/samples')
+def get_sample_sequences():
+    response = {}
+
+    with open('./app/samples/example.fasta', 'r') as fasta:
+        response['fasta_data'] = fasta.read()
+
+    with open('./app/samples/example.vcf', 'r') as vcf:
+        response['vcf_data'] = vcf.read()
+
+    with open('./app/samples/example.bed', 'r') as bed:
+        response['bed_data'] = bed.read()
+
+    return jsonify(response)
 
 
 @bp.route('/get_predictions', methods=['POST'])
@@ -48,12 +65,13 @@ def get_predictions():
         for sequence in sequences:
             predictions = model.predict(sequence['seq'])
             for prediction in predictions:
-                response.append({
-                    'name': sequence['id'],
-                    'model': model_name,
-                    'feature': '',
-                    'score': prediction.tolist(),
-                    'normalized_score': ''
-                })
+                for score in prediction.tolist():
+                    response.append({
+                        'name': sequence['id'],
+                        'model': model_name,
+                        'feature': '',
+                        'score': score,
+                        'normalized_score': ''
+                    })
 
     return jsonify(response)
