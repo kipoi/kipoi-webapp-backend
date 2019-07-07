@@ -9,6 +9,7 @@ ENV PATH /opt/conda/envs/kipoi-shared__envs__kipoi-py3-keras2/bin:$PATH
 
 RUN pip install flask
 RUN pip install flask_caching
+RUN pip install flask_cors
 
 WORKDIR /app
 

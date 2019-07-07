@@ -3,6 +3,7 @@ Main app view containing the app instance and global variables
 """
 import os
 from flask import Flask
+from flask_cors import CORS
 
 
 def get_app_base_path():
@@ -17,6 +18,8 @@ def get_instance_folder_path():
 
 app = Flask(__name__,
             instance_path=get_instance_folder_path())
+app.config['JSON_SORT_KEYS'] = False
+CORS(app)
 
 app.config.from_pyfile('config.py')
 
