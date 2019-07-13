@@ -59,7 +59,10 @@ def get_predictions():
         if model_name in cached_models:
             model = cached_models[model_name]
         else:
-            model = KipoiSequenceModel(model_name)
+            try:
+                model = KipoiSequenceModel(model_name)
+            except ValueError:
+                return jsonify({'type': 'error', 'message': f'Model {model_name} does not exist.'})
             cached_models[model_name] = model
 
         for sequence in sequences:
