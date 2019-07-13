@@ -23,7 +23,7 @@ def read_sequences(request):
     if 'sequences' in request.form:
         sequences = json.loads(request.form['sequences'])
 
-    if request.files is not None:
+    if 'file' in request.files:
         file = request.files['file']
         base_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
         full_path = os.path.join(base_path, request.form['filename'])
