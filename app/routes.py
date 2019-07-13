@@ -5,6 +5,8 @@ File containing the routes.
 from flask import Blueprint, abort, jsonify, request
 from app.metadata import models
 from app.generic.sequence_model import KipoiSequenceModel
+from .utilities import get_errors, read_sequences
+import os
 
 bp = Blueprint('routes', __name__)
 cached_models = {}
@@ -18,20 +20,23 @@ def get_model_list(environment=None):
     if environment is not None:
         sequence_models = models.filter_sequence_models_by_environment(sequence_models, environment)
 
-    return jsonify(sequence_models)
+    sequence_models['group'] = sequence_models['model'].str.split('/').str[0]
+    return sequence_models.to_json(orient='records')
 
 
 @bp.route('/metadata/samples')
 def get_sample_sequences():
     response = {}
 
-    with open('./app/samples/example.fasta', 'r') as fasta:
+    base_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
+
+    with open(os.path.join(base_path, 'example.fasta'), 'r') as fasta:
         response['fasta_data'] = fasta.read()
 
-    with open('./app/samples/example.vcf', 'r') as vcf:
+    with open(os.path.join(base_path, 'example.vcf'), 'r') as vcf:
         response['vcf_data'] = vcf.read()
 
-    with open('./app/samples/example.bed', 'r') as bed:
+    with open(os.path.join(base_path, 'example.bed'), 'r') as bed:
         response['bed_data'] = bed.read()
 
     return jsonify(response)
@@ -39,19 +44,15 @@ def get_sample_sequences():
 
 @bp.route('/get_predictions', methods=['POST'])
 def get_predictions():
-    if not request.json:
-        return jsonify({'type': 'error', 'message': 'Not a valid request'})
+    errors = get_errors(request)
+    if errors is not None:
+        return jsonify(errors)
 
-    if 'models' not in request.json:
-        return jsonify({'type': 'error', 'message': 'No models selected'})
+    selected_models = eval(request.form['models'])
+    sequences, error = read_sequences(request)
 
-    selected_models = request.json['models']
-    if selected_models is None or len(selected_models) == 0:
-        return jsonify({'type': 'error', 'message': 'No models selected'})
-
-    sequences = request.json['sequences']
-    if sequences is None or len(sequences) == 0:
-        return jsonify({'type': 'error', 'message': 'No sequences sent'})
+    if error is not None:
+        return jsonify(error)
 
     response = []
 
