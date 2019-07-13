@@ -9,7 +9,7 @@ from app.cache import cache
 @cache.memoize()
 def get_model_list(source):
     """Cache for kipoi's list models"""
-    df = kipoi.list_models()
+    df = kipoi.get_source(source).list_models()
     return df
 
 
@@ -37,8 +37,12 @@ def list_all_sequence_models(source='kipoi'):
     """
     List all the sequence models in Kipoi for a given source
     """
-    return [name for name in kipoi.get_source(source)._list_components("model") if
-            is_sequence_model(kipoi.get_model_descr(name))]
+    model_list = get_model_list(source)
+
+    model_list['sequence_model'] = model_list.apply(
+        lambda model: is_sequence_model(kipoi.get_model_descr(model['model'])), axis=1)
+
+    return model_list.loc[model_list['sequence_model']]
 
 
 def get_environment(model_name, environments):
@@ -56,5 +60,6 @@ def filter_sequence_models_by_environment(sequence_models, environment, source='
     """
     environments = get_environments(source)
 
-    return [model for model in sequence_models if
-            get_environment(model, environments) is not None and get_environment(model, environments) == environment]
+    sequence_models.loc[:, 'environment'] = sequence_models.apply(
+        lambda model: get_environment(model['model'], environments), axis=1)
+    return sequence_models[sequence_models['environment'] == environment]
