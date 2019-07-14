@@ -16,8 +16,6 @@ Since there are two Kipoi environments, we have two different Flask apps to use 
 - Navigate into `kipoi-webapp-backend`
 - Build the keras2 environment app: `docker build -f Dockerfile -t YOUR_DOCKER_USERNAME/kipoi-backend-keras2:latest .`
 - Push the keras2 environment app: `docker push YOUR_DOCKER_USERNAME/kipoi-backend-keras2:latest`
----
-- Navigate into `kipoi-webapp-router`
 - Build the keras1 environment app: `docker build -f Dockerfile2 -t YOUR_DOCKER_USERNAME/kipoi-backend-keras1:latest .`
 - Push the keras1 environment app: `docker push YOUR_DOCKER_USERNAME/kipoi-backend-keras1:latest`
 
@@ -34,6 +32,7 @@ Since there are two Kipoi environments, we have two different Flask apps to use 
 - Find the IPs of services with `minikube service list`
 
 ### Building and Publishing Router App
+- Navigate into `kipoi-webapp-router`
 - Build the Docker image:
     - `docker build -f Dockerfile -t YOUR_DOCKER_USERNAME/kipoi-router:latest .`
 - Publish the Docker image:
