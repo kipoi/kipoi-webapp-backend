@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kipoi-router
+spec:
+  replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      maxUnavailable: 1
+      maxSurge: 1 
+  template:
+    metadata:
+      labels:
+        app: kipoi-router
+    spec:
+      containers:
+        - image: goktugerce/kipoi-router
+          imagePullPolicy: Always
+          name: kipoi-router
+          env:
+            - name: KERAS1_URL
+              value: "http://192.168.99.100:32437"
+            - name: KERAS2_URL
+              value: "http://192.168.99.100:31161"
+          ports:
+            - containerPort: 5000
