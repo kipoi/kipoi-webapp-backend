@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kipoi-frontend
+spec:
+  replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: kipoi-frontend
+    spec:
+      containers:
+        - image: goktugerce/kipoi-frontend
+          imagePullPolicy: Always
+          name: kipoi-frontend
+          ports:
+            - containerPort: 80

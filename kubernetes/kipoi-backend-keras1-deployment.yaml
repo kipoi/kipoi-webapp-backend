@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kipoi-backend-keras1
+spec:
+  replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: kipoi-backend-keras1
+    spec:
+      containers:
+        - image: goktugerce/kipoi-backend-keras1
+          imagePullPolicy: Always
+          name: kipoi-backend-keras1
+          ports:
+            - containerPort: 5000
