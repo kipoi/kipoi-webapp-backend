@@ -1,8 +1,3 @@
-import json
-import os
-from Bio import SeqIO
-
-
 def get_errors(request):
     if not request.json:
         return {'type': 'error', 'message': 'Not a valid request'}
